@@ -9,7 +9,7 @@ application = get_wsgi_application()
 django.setup()
 
 from django.core.management import call_command
-from django.contrib.auth.models import get_user_model
+from django.contrib.auth import get_user_model
 from django.db import OperationalError
 
 
