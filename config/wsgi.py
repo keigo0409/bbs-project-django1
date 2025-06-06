@@ -1,5 +1,5 @@
 import os
-
+import django
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
@@ -16,13 +16,14 @@ User = get_user_model()
 
 try:
     call_command('migrate',interactive=False)
+    User = get_user_model()
+    if not User.objects.filter(is_superuser=True).exists():
+        import os
+        username=os.environ.get('DJANGO_SUPERUSER_NAME')
+        email=os.environ.get('DJANGO_SUPERUSER_EMAIL')
+        password=os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+        User.objects.create_superuser(username=username,email=email,password=password)
 except OperationalError as e:
     print(f"Migrate error: {e}")
-    pass
 
-if not User.objects.filter(username=SUPERUSER_NAME).exists():
-    User.objects.create_superuser(
-        username=SUPERUSER_NAME,
-        email=SUPERUSER_EMAIL,
-        password=SUPERUSER_PASSWORD,
-    )
+application = get_wsgi_application()
